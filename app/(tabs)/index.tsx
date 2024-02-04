@@ -1,9 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, FlatList, ListRenderItem, Image } from 'react-native';
+import { useEffect } from 'react';
+import { View, Text, FlatList, ListRenderItem, Image, Pressable } from 'react-native';
 
 import data from '@/assets/data.json';
+import useCartStore from '@/store/cartStore';
 
 export default function Home() {
+  const { addToCart, removeFromCart } = useCartStore();
+
+  useEffect(() => {
+    useCartStore.subscribe((state) => console.log('STATE: ', state.products));
+  }, []);
+
   const renderItem: ListRenderItem<any> = ({ item }) => {
     return (
       <View className="flex-row items-center mb-6 shadow-md bg-slate-50 py-6 px-2 rounded-lg w-full">
@@ -23,8 +31,12 @@ export default function Home() {
           <Text className="font-normal">${item.price}</Text>
         </View>
         <View className="flex-row h-full items-center">
-          <Ionicons name="remove" size={20} color="#000" />
-          <Ionicons name="add" size={20} color="#000" />
+          <Pressable onPress={() => removeFromCart(item)}>
+            <Ionicons name="remove" size={20} color="#000" />
+          </Pressable>
+          <Pressable onPress={() => addToCart(item)}>
+            <Ionicons name="add" size={20} color="#000" />
+          </Pressable>
         </View>
       </View>
     );

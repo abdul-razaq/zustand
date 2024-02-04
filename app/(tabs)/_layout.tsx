@@ -11,6 +11,10 @@ export default function TabsLayout() {
           tabBarIcon: ({ size, color }) => (
             <FontAwesome5 name="shopping-bag" size={size} color={color} />
           ),
+          tabBarStyle: {
+            elevation: 0,
+            shadowColor: 'transparent',
+          },
           tabBarLabel: 'Shop',
           headerTitle: 'Shop',
           headerTitleAlign: 'center',
