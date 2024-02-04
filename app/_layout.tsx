@@ -1,7 +1,20 @@
 import '../global.css';
 
-import { Slot } from 'expo-router';
+import { Stack } from 'expo-router';
 
 export default function RootLayout() {
-  return <Slot />;
+  return (
+    <Stack screenOptions={{ headerShadowVisible: false }}>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="modal"
+        options={{
+          presentation: 'modal',
+          animation: 'slide_from_bottom',
+          headerTitle: 'Your Cart',
+          headerTitleAlign: 'center',
+        }}
+      />
+    </Stack>
+  );
 }

@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect } from 'react';
 import { View, Text, FlatList, ListRenderItem, Image, Pressable } from 'react-native';
 
 import data from '@/assets/data.json';
