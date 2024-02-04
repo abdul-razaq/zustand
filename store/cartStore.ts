@@ -2,6 +2,9 @@ import { create } from 'zustand';
 
 import { Product } from './interfaces';
 
+import { createJSONStorage, persist } from 'zustand/middleware';
+import { zustandStorage } from './mmkv';
+
 export interface CartState {
   products: Array<Product & { quantity: number }>;
   addToCart: (product: Product) => void;
@@ -11,52 +14,57 @@ export interface CartState {
   totalCartPrice: () => number;
 }
 
-const useCartStore = create<CartState>()((set, get) => {
-  return {
-    products: [],
-    addToCart: (product: Product) =>
-      set((state) => {
-        const existingProduct = state.products.find((p) => p.id === product.id);
-        if (existingProduct) {
-          existingProduct.quantity += 1;
-          return {
-            products: [...state.products],
-          };
-        }
-        return {
-          products: [...state.products, { ...product, quantity: 1 }],
-        } as any;
-      }),
-    removeFromCart: (product: Product) =>
-      set((state) => {
-        const existingProduct = state.products.find((p) => p.id === product.id);
-        if (existingProduct) {
-          if (existingProduct.quantity <= 1) {
+const useCartStore = create<CartState>()(
+  persist(
+    (set, get) => {
+      return {
+        products: [],
+        addToCart: (product: Product) =>
+          set((state) => {
+            const existingProduct = state.products.find((p) => p.id === product.id);
+            if (existingProduct) {
+              existingProduct.quantity += 1;
+              return {
+                products: [...state.products],
+              };
+            }
             return {
-              products: state.products.filter((product) => product.quantity !== 1),
-            };
-          } else {
-            existingProduct.quantity -= 1;
-            return {
-              products: [...state.products],
+              products: [...state.products, { ...product, quantity: 1 }],
             } as any;
-          }
-        } else {
-          return { products: [...state.products] };
-        }
-      }),
-    clearCart: () =>
-      set(() => {
-        return {
-          products: [],
-        } as any;
-      }),
-    totalItems: () => get().products.reduce((prev, curr) => prev + curr.quantity, 0),
-    totalCartPrice: () =>
-      get()
-        .products.reduce((prev, curr) => prev + curr.price * curr.quantity, 0)
-        .toFixed(2),
-  };
-});
+          }),
+        removeFromCart: (product: Product) =>
+          set((state) => {
+            const existingProduct = state.products.find((p) => p.id === product.id);
+            if (existingProduct) {
+              if (existingProduct.quantity <= 1) {
+                return {
+                  products: state.products.filter((product) => product.quantity !== 1),
+                };
+              } else {
+                existingProduct.quantity -= 1;
+                return {
+                  products: [...state.products],
+                } as any;
+              }
+            } else {
+              return { products: [...state.products] };
+            }
+          }),
+        clearCart: () =>
+          set(() => {
+            return {
+              products: [],
+            } as any;
+          }),
+        totalItems: () => get().products.reduce((prev, curr) => prev + curr.quantity, 0),
+        totalCartPrice: () =>
+          get()
+            .products.reduce((prev, curr) => prev + curr.price * curr.quantity, 0)
+            .toFixed(2),
+      };
+    },
+    { name: 'cart', storage: createJSONStorage(() => zustandStorage) }
+  )
+);
 
 export default useCartStore;

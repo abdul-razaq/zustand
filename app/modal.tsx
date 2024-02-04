@@ -6,7 +6,8 @@ import useCartStore from '@/store/cartStore';
 import { Product } from '@/store/interfaces';
 
 export default function ModalScreen() {
-  const { addToCart, removeFromCart, products, clearCart, totalCartPrice } = useCartStore();
+  const { addToCart, removeFromCart, products, clearCart, totalCartPrice, totalItems } =
+    useCartStore();
 
   const renderItem: ListRenderItem<Product & { quantity: number }> = ({ item }) => {
     return (
@@ -46,6 +47,11 @@ export default function ModalScreen() {
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
+        ListFooterComponent={
+          totalItems() > 0 ? (
+            <Text className="text-2xl font-bold">Total: ${totalCartPrice()}</Text>
+          ) : null
+        }
       />
 
       <Pressable
