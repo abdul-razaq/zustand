@@ -8,10 +8,6 @@ import useCartStore from '@/store/cartStore';
 export default function Home() {
   const { addToCart, removeFromCart } = useCartStore();
 
-  useEffect(() => {
-    useCartStore.subscribe((state) => console.log('STATE: ', state.products));
-  }, []);
-
   const renderItem: ListRenderItem<any> = ({ item }) => {
     return (
       <View className="flex-row items-center mb-6 shadow-md bg-slate-50 py-6 px-2 rounded-lg w-full">
